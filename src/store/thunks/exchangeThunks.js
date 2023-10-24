@@ -1,15 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getExchangeRateByDate } from '../../apis/exchangerates.api';
 
-function saveToLocalStorage(state) {
-	try {
-		const serialisedState = JSON.stringify(state);
-		localStorage.setItem('persistantState', serialisedState);
-	} catch (e) {
-		console.warn(e);
-	}
-}
-
 export const fetchExchangeRate = createAsyncThunk(
 	'exchange/fetchExchangeRate',
 	async ({ date, currency, base }) => {
@@ -21,7 +12,6 @@ export const fetchExchangeRate = createAsyncThunk(
 export const addTransactionThunk = createAsyncThunk(
 	'exchange/addTransaction',
 	async (transaction, { getState }) => {
-		saveToLocalStorage(getState());
 		return transaction;
 	}
 );
@@ -29,7 +19,6 @@ export const addTransactionThunk = createAsyncThunk(
 export const removeTransactionThunk = createAsyncThunk(
 	'exchange/removeTransaction',
 	async (id, { getState }) => {
-		saveToLocalStorage(getState());
 		return id;
 	}
 );

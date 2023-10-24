@@ -44,7 +44,10 @@ export const headersConfig = [
 	{
 		label: 'profitLoss',
 		title: 'Profit/Loss',
-		sortValue: item => item.profitLoss,
+		sortValue: item => {
+			const percentagePart = item.profitLoss.match(/\((.*?)%\)/);
+			return percentagePart ? parseFloat(percentagePart[1]) : 0;
+		},
 		isSortable: true,
 	},
 	{ label: 'actions', title: 'Actions', isSortable: false },

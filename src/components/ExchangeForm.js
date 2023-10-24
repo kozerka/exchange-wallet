@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	fetchExchangeRate,
@@ -18,7 +18,9 @@ import {
 	setRate,
 } from '../store/slices/exchangeSlice';
 import Button from './Button';
+import FormField from './FormField';
 import useCurrentRate from '../hooks/useCurrentRate';
+import useFormValidation from '../hooks/useFormValidation';
 
 function ExchangeForm() {
 	const dispatch = useDispatch();
@@ -31,9 +33,15 @@ function ExchangeForm() {
 	const date = useSelector(state => state.exchange.date);
 	const rate = useSelector(state => state.exchange.rate);
 	const rateModifiedByUser = useSelector(state => state.exchange.rateModifiedByUser);
-	const [errors, setErrors] = useState({});
 	const currentRate = useCurrentRate(base, currency);
-
+	const { handleInputChange, validateAllFields, getFieldValue, errors, setErrors } =
+		useFormValidation(formFields, {
+			currency,
+			base,
+			amount,
+			date,
+			rate,
+		});
 	useEffect(() => {
 		if (base && date && !rateModifiedByUser) {
 			dispatch(fetchExchangeRate({ date, currency, base }))
@@ -56,7 +64,7 @@ function ExchangeForm() {
 				return newErrors;
 			});
 		}
-	}, [rate, errors]);
+	}, [rate, errors, setErrors]);
 
 	const handleSubmit = e => {
 		e.preventDefault();
@@ -74,62 +82,30 @@ function ExchangeForm() {
 		}
 	};
 
-	const handleInputChange = (name, value) => {
-		switch (name) {
-			case 'currency':
-				dispatch(setCurrency(value));
-				break;
-			case 'base':
-				dispatch(setBase(value));
-				break;
-			case 'amount':
-				dispatch(setAmount(value));
-				break;
-			case 'date':
-				dispatch(setDate(value));
-				break;
-			case 'rate':
-				dispatch(setRate(value));
-				break;
-			default:
-				break;
-		}
-
-		// walidacja
-		const field = formFields.find(f => f.name === name);
-		if (field && field.validate) {
-			const errorMessage = field.validate(value);
-			setErrors(prevErrors => ({ ...prevErrors, [name]: errorMessage }));
-		}
-	};
-	const validateAllFields = () => {
-		const errorsFound = {};
-		formFields.forEach(field => {
-			const errorMessage = field.validate && field.validate(getFieldValue(field.name));
-			if (errorMessage) {
-				errorsFound[field.name] = errorMessage;
+	const handleInputChangeCustom = (name, value) => {
+		handleInputChange(name, value, (fieldName, fieldValue) => {
+			switch (fieldName) {
+				case 'currency':
+					dispatch(setCurrency(fieldValue));
+					break;
+				case 'base':
+					dispatch(setBase(fieldValue));
+					break;
+				case 'amount':
+					dispatch(setAmount(fieldValue));
+					break;
+				case 'date':
+					dispatch(setDate(fieldValue));
+					break;
+				case 'rate':
+					dispatch(setRate(fieldValue));
+					break;
+				default:
+					break;
 			}
 		});
-		setErrors(errorsFound);
-		return Object.keys(errorsFound).length === 0; // zwraca true, jeśli nie znaleziono błędów
 	};
 
-	const getFieldValue = fieldName => {
-		switch (fieldName) {
-			case 'currency':
-				return currency;
-			case 'base':
-				return base;
-			case 'amount':
-				return amount;
-			case 'date':
-				return date;
-			case 'rate':
-				return rate;
-			default:
-				return '';
-		}
-	};
 	const calculatePercentageChange = (purchaseValue, currentValue) => {
 		if (purchaseValue === 0) return 0;
 		return ((currentValue - purchaseValue) / purchaseValue) * 100;
@@ -164,62 +140,13 @@ function ExchangeForm() {
 		<>
 			<form onSubmit={handleSubmit}>
 				{formFields.map(field => (
-					<div key={field.name}>
-						<label>
-							{field.label}:
-							{field.type === 'radio' &&
-								field.options.map(option => (
-									<span key={option}>
-										<input
-											type={'radio'}
-											name={field.name}
-											value={option}
-											checked={currency === option} // Tylko dla 'currency'
-											onChange={e => handleInputChange(field.name, e.target.value)}
-										/>{' '}
-										{option}
-									</span>
-								))}
-							{field.type === 'select' && (
-								<select
-									name={field.name}
-									value={base || ''} // Tylko dla 'base'
-									onChange={e => handleInputChange(field.name, e.target.value)}
-								>
-									{field.options.map(option => (
-										<option key={option} value={option}>
-											{option}
-										</option>
-									))}
-								</select>
-							)}
-							{field.type === 'number' && field.name === 'amount' && (
-								<input
-									type={'number'}
-									name={field.name}
-									value={amount || ''}
-									onChange={e => handleInputChange(field.name, e.target.value)}
-								/>
-							)}
-							{field.type === 'number' && field.name === 'rate' && (
-								<input
-									type={'number'}
-									name={field.name}
-									value={rate || ''}
-									onChange={e => handleInputChange(field.name, e.target.value)}
-								/>
-							)}
-							{field.type === 'date' && (
-								<input
-									type={'date'}
-									name={field.name}
-									value={date || ''}
-									onChange={e => handleInputChange(field.name, e.target.value)}
-								/>
-							)}
-						</label>
-						{errors[field.name] && <p style={{ color: 'red' }}>{errors[field.name]}</p>}
-					</div>
+					<FormField
+						key={field.name}
+						field={field}
+						handleInputChange={handleInputChangeCustom}
+						value={getFieldValue(field.name)}
+						errors={errors}
+					/>
 				))}
 
 				<div>
