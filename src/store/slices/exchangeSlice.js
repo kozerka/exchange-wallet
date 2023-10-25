@@ -15,8 +15,8 @@ const initialState = {
 	amount: '',
 	date: '',
 	rate: '',
-	currentRate: 0,
 	rateModifiedByUser: false,
+	lastUpdatedDate: null,
 };
 
 const exchangeSlice = createSlice({
@@ -49,6 +49,18 @@ const exchangeSlice = createSlice({
 			state.date = '';
 			state.rate = '';
 			state.rateModifiedByUser = false;
+		},
+		addTransaction: (state, action) => {
+			state.transactions.push(action.payload);
+		},
+		updateTransactionHistory: (state, action) => {
+			const transactionToUpdate = state.transactions.find(t => t.id === action.payload.id);
+			if (transactionToUpdate) {
+				transactionToUpdate.history = [...transactionToUpdate.history, action.payload.history];
+			}
+		},
+		setLastUpdatedDate: (state, action) => {
+			state.lastUpdatedDate = action.payload;
 		},
 	},
 
@@ -84,6 +96,9 @@ export const {
 	setRate,
 	resetForm,
 	setRateModifiedByUser,
+	addTransaction,
+	updateTransactionHistory,
+	setLastUpdatedDate,
 } = exchangeSlice.actions;
 
 export default exchangeSlice.reducer;

@@ -44,6 +44,12 @@ function Table({ headersConfig, rows, onRemove }) {
 								>
 									{header.label === 'actions' ? (
 										<button onClick={() => onRemove(row.id)}>delete</button>
+									) : ['currentRate', 'currentValue', 'profitLoss'].includes(header.label) ? (
+										row.history && row.history.length ? (
+											row.history[row.history.length - 1][header.label]
+										) : (
+											'-'
+										)
 									) : (
 										row[header.label]
 									)}

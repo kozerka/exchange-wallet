@@ -7,7 +7,7 @@ import {
 } from '../store/thunks/exchangeThunks';
 import { headersConfig } from '../utils/headersConfig';
 import Table from './Table';
-
+import { getExchangeRateByDate } from '../apis/exchangerates.api';
 import { formFields } from '../utils/formFields';
 import {
 	resetForm,
@@ -16,6 +16,8 @@ import {
 	setAmount,
 	setDate,
 	setRate,
+	updateTransactionHistory,
+	setLastUpdatedDate,
 } from '../store/slices/exchangeSlice';
 import Button from './Button';
 import FormField from './FormField';
@@ -34,6 +36,7 @@ function ExchangeForm() {
 	const rate = useSelector(state => state.exchange.rate);
 	const rateModifiedByUser = useSelector(state => state.exchange.rateModifiedByUser);
 	const currentRate = useCurrentRate(base, currency);
+	const lastUpdatedDate = useSelector(state => state.exchange.lastUpdatedDate);
 	const { handleInputChange, validateAllFields, getFieldValue, errors, setErrors } =
 		useFormValidation(formFields, {
 			currency,
@@ -105,6 +108,41 @@ function ExchangeForm() {
 			}
 		});
 	};
+	const handleUpdateHistory = async () => {
+		for (const transaction of transactions) {
+			try {
+				const response = await getExchangeRateByDate(
+					transaction.date,
+					transaction.currency,
+					transaction.base
+				);
+				const currentRate = response.rates[transaction.currency];
+
+				const roundedCurrentRate = Number(currentRate.toFixed(2));
+				const currentValue = (transaction.rate * transaction.amount).toFixed(2);
+				const purchaseValue = (roundedCurrentRate * transaction.amount).toFixed(2);
+				const profitLossValue = Number(
+					(roundedCurrentRate * transaction.amount - currentValue).toFixed(2)
+				);
+				const percentageChange = calculatePercentageChange(currentValue, purchaseValue).toFixed(2);
+				const profitLossDisplayValue = `${profitLossValue} (${percentageChange}%)`;
+
+				const newHistoryEntry = {
+					date: new Date().toISOString(), // data aktualizacji
+					currentRate: roundedCurrentRate,
+					currentValue,
+					profitLoss: profitLossDisplayValue,
+				};
+
+				dispatch(updateTransactionHistory({ id: transaction.id, history: newHistoryEntry }));
+			} catch (error) {
+				console.error('Błąd podczas aktualizacji historii:', error);
+			}
+		}
+
+		// Aktualizuj datę ostatniej aktualizacji
+		dispatch(setLastUpdatedDate(new Date().toISOString()));
+	};
 
 	const calculatePercentageChange = (purchaseValue, currentValue) => {
 		if (purchaseValue === 0) return 0;
@@ -117,19 +155,33 @@ function ExchangeForm() {
 		const profitLossValue = Number((roundedCurrentRate * amount - currentValue).toFixed(2));
 		const percentageChange = calculatePercentageChange(currentValue, purchaseValue).toFixed(2);
 		const profitLossDisplayValue = `${profitLossValue} (${percentageChange}%)`;
+		const transactionId = Date.now();
 		dispatch(
 			addTransactionThunk({
-				id: Date.now(),
+				id: transactionId,
 				symbols: currency,
 				base,
 				amount,
 				date,
 				rate: rateModifiedByUser ? rate : selectedRate.toFixed(2),
-				currentRate: roundedCurrentRate,
-				currentValue,
-				profitLoss: profitLossDisplayValue,
+				history: [
+					{
+						date: new Date().toISOString(),
+						currentRate: roundedCurrentRate,
+						currentValue,
+						profitLoss: profitLossDisplayValue,
+					},
+				],
 			})
 		);
+		const newHistoryEntry = {
+			date: new Date().toISOString(),
+			currentRate: roundedCurrentRate,
+			currentValue,
+			profitLoss: profitLossDisplayValue,
+		};
+
+		dispatch(updateTransactionHistory({ id: transactionId, history: newHistoryEntry }));
 		dispatch(resetForm());
 	};
 
@@ -138,7 +190,7 @@ function ExchangeForm() {
 	};
 	return (
 		<div>
-			<form className="max-w-xl mx-auto w-full md:w-1/2 lg:w-1/3" onSubmit={handleSubmit}>
+			<form className={'max-w-xl mx-auto w-full md:w-1/2 lg:w-1/3'} onSubmit={handleSubmit}>
 				{formFields.map(field => (
 					<FormField
 						key={field.name}
@@ -162,6 +214,12 @@ function ExchangeForm() {
 					)}
 				</div>
 			</form>
+			<div>
+				{lastUpdatedDate && (
+					<p>Aktualne dane na datę: {new Date(lastUpdatedDate).toLocaleDateString()}</p>
+				)}
+			</div>
+			<Button onClick={handleUpdateHistory}>Odśwież historię</Button>
 			<Table headersConfig={headersConfig} rows={transactions} onRemove={handleRemoveTransaction} />
 		</div>
 	);
