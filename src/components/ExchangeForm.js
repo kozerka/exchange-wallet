@@ -23,6 +23,7 @@ import Button from './Button';
 import FormField from './FormField';
 import useCurrentRate from '../hooks/useCurrentRate';
 import useFormValidation from '../hooks/useFormValidation';
+import { GiClick } from 'react-icons/gi';
 
 function ExchangeForm() {
 	const dispatch = useDispatch();
@@ -189,8 +190,9 @@ function ExchangeForm() {
 		dispatch(removeTransactionThunk(id));
 	};
 	return (
-		<div>
-			<form className={'max-w-xl mx-auto w-full md:w-1/2 lg:w-1/3'} onSubmit={handleSubmit}>
+		<div className="flex m-4">
+			<form className={'max-w-xl mx-auto w-1/5'} onSubmit={handleSubmit}>
+				<h1 className="text-center font-bold text-xl m-4 p-4">Please provide transaction</h1>
 				{formFields.map(field => (
 					<FormField
 						key={field.name}
@@ -214,13 +216,27 @@ function ExchangeForm() {
 					)}
 				</div>
 			</form>
-			<div>
-				{lastUpdatedDate && (
-					<p>Aktualne dane na datę: {new Date(lastUpdatedDate).toLocaleDateString()}</p>
-				)}
+			<div className="w-4/5 pl-8 pr-6">
+				<div className="m-4">
+					<Button
+						className="w-full bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded block text-lg"
+						onClick={handleUpdateHistory}
+					>
+						<span>Current data for the date: </span>
+						<span className="font-bold">
+							{lastUpdatedDate ? new Date(lastUpdatedDate).toLocaleDateString() : 'not available'}.
+						</span>
+						<br />
+						<span className="uppercase mx-2 my-1">Click to update.</span>{' '}
+						<GiClick className="inline-block ml-2" />
+					</Button>
+				</div>
+				<Table
+					headersConfig={headersConfig}
+					rows={transactions}
+					onRemove={handleRemoveTransaction}
+				/>
 			</div>
-			<Button onClick={handleUpdateHistory}>Odśwież historię</Button>
-			<Table headersConfig={headersConfig} rows={transactions} onRemove={handleRemoveTransaction} />
 		</div>
 	);
 }
