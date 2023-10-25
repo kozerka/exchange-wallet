@@ -37,16 +37,28 @@ function FormField({ field, handleInputChange, value, errors }) {
 					</select>
 				)}
 				{['number', 'date'].includes(field.type) && (
-					<input
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  0"
-						type={field.type}
-						name={field.name}
-						value={value || ''}
-						onChange={e => {
-							const inputValue = field.type === 'number' ? Number(e.target.value) : e.target.value;
-							handleInputChange(field.name, inputValue);
-						}}
-					/>
+					<div>
+						<input
+							className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  0"
+							type={field.type}
+							name={field.name}
+							value={value || ''}
+							onChange={e => {
+								const inputValue =
+									field.type === 'number' ? Number(e.target.value) : e.target.value;
+								handleInputChange(field.name, inputValue);
+							}}
+						/>
+						{field.name === 'profitLoss' && (
+							<span
+								className={`inline-block mt-2 px-4 py-1 text-sm font-medium rounded ${
+									value < 0 ? 'bg-red-500' : value > 0 ? 'bg-green-500' : 'bg-blue-500'
+								}`}
+							>
+								{value}%
+							</span>
+						)}
+					</div>
 				)}
 			</label>
 			{errors[field.name] && (

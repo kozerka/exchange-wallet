@@ -38,16 +38,31 @@ export const headersConfig = [
 	{
 		label: 'currentValue',
 		title: 'Current Value',
-		sortValue: item => item.currentValue,
+		sortValue: item => {
+			const latestHistory =
+				item.history && item.history.length ? item.history[item.history.length - 1] : null;
+			return latestHistory ? parseFloat(latestHistory.currentValue) : 0;
+		},
 		isSortable: true,
 	},
 	{
 		label: 'profitLoss',
 		title: 'Profit/Loss',
 		sortValue: item => {
-			const percentagePart = item.profitLoss.match(/\((.*?)%\)/);
-			return percentagePart ? parseFloat(percentagePart[1]) : 0;
+			const latestHistory =
+				item.history && item.history.length ? item.history[item.history.length - 1] : null;
+			const profitLossValue = latestHistory ? latestHistory.profitLoss : '';
+			const percentagePart = profitLossValue.match(/\((.*?)%\)/);
+
+			if (percentagePart) {
+				return parseFloat(percentagePart[1]);
+			} else if (profitLossValue.includes('0 (0%)')) {
+				return 0;
+			} else {
+				return 0;
+			}
 		},
+
 		isSortable: true,
 	},
 	{ label: 'actions', title: 'Actions', isSortable: false },

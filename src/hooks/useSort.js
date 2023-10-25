@@ -26,8 +26,8 @@ const useSort = (data, config) => {
 	if (sortOrder && sortBy) {
 		const { sortValue } = config.find(column => column.label === sortBy);
 		sortedData = [...data].sort((a, b) => {
-			const aValue = sortValue(a);
-			const bValue = sortValue(b);
+			const aValue = sortValue(a) || '';
+			const bValue = sortValue(b) || '';
 			const reverseOrder = sortOrder === 'asc' ? 1 : -1;
 			const isDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 			if (isDatePattern.test(aValue) && isDatePattern.test(bValue)) {
@@ -36,7 +36,10 @@ const useSort = (data, config) => {
 			if (typeof aValue === 'number' && typeof bValue === 'number') {
 				return (aValue - bValue) * reverseOrder;
 			}
-			return aValue.localeCompare(bValue) * reverseOrder;
+			if (typeof aValue === 'string' && typeof bValue === 'string') {
+				return aValue.localeCompare(bValue) * reverseOrder;
+			}
+			return 0;
 		});
 	}
 

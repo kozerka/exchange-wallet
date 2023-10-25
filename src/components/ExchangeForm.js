@@ -219,7 +219,7 @@ function ExchangeForm() {
 			<div className="w-4/5 pl-8 pr-6">
 				<div className="m-4">
 					<Button
-						className="w-full bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded block text-lg"
+						className="w-full bg-yellow-400 hover:bg-orange-500 text-black px-4 py-2 rounded block text-lg"
 						onClick={handleUpdateHistory}
 					>
 						<span>Current data for the date: </span>
