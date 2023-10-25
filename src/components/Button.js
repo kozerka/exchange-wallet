@@ -1,53 +1,28 @@
-import styled, { keyframes } from 'styled-components';
 import PropTypes from 'prop-types';
 import { GoSync } from 'react-icons/go';
 
-const spinAnimation = keyframes`
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
-`;
-
-const StyledGoSync = styled(GoSync)`
-	animation: ${spinAnimation} 1s linear infinite;
-`;
-
-const StyledButton = styled.button`
-	padding: 0.375rem 1rem;
-	border: 1px solid transparent;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-
-	${props =>
-		props.primary &&
-		`
-		border-color: blue;
-		background-color: blue;
-		color: white;
-	`}
-
-	${props =>
-		props.secondary &&
-		`
-		border-color: gray;
-		background-color: gray;
-		color: white;
-	`}
-
-	${props =>
-		props.loading &&
-		`
-		opacity: 0.8;
-	`}
-
-	&:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-`;
-
 function Button({ children, primary, secondary, loading, ...rest }) {
-	return <StyledButton {...rest}>{loading ? <StyledGoSync /> : children}</StyledButton>;
+	const baseClasses = 'px-4 py-2 border rounded flex items-center cursor-pointer w-full';
+	const primaryClasses = primary ? 'border-red-500 bg-red-500 text-white' : '';
+	const secondaryClasses = secondary ? 'border-gray-400 bg-gray-400 text-white' : '';
+	const loadingClasses = loading ? 'opacity-80 bg-red-600 border-red-600 text-white ' : '';
+	const disabledClasses = rest.disabled ? 'opacity-60 cursor-not-allowed' : '';
+
+	return (
+		<button
+			className={`${baseClasses} ${primaryClasses} ${secondaryClasses} ${loadingClasses} ${disabledClasses}`}
+			{...rest}
+		>
+			{loading ? (
+				<>
+					<GoSync className="animate-spin mr-2" />
+					Loading...
+				</>
+			) : (
+				children
+			)}
+		</button>
+	);
 }
 
 Button.propTypes = {

@@ -137,8 +137,8 @@ function ExchangeForm() {
 		dispatch(removeTransactionThunk(id));
 	};
 	return (
-		<>
-			<form onSubmit={handleSubmit}>
+		<div>
+			<form className="max-w-xl mx-auto w-full md:w-1/2 lg:w-1/3" onSubmit={handleSubmit}>
 				{formFields.map(field => (
 					<FormField
 						key={field.name}
@@ -163,7 +163,7 @@ function ExchangeForm() {
 				</div>
 			</form>
 			<Table headersConfig={headersConfig} rows={transactions} onRemove={handleRemoveTransaction} />
-		</>
+		</div>
 	);
 }
 
