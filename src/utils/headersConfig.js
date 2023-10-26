@@ -52,17 +52,10 @@ export const headersConfig = [
 			const latestHistory =
 				item.history && item.history.length ? item.history[item.history.length - 1] : null;
 			const profitLossValue = latestHistory ? latestHistory.profitLoss : '';
-			const percentagePart = profitLossValue.match(/\((.*?)%\)/);
-
-			if (percentagePart) {
-				return parseFloat(percentagePart[1]);
-			} else if (profitLossValue.includes('0 (0%)')) {
-				return 0;
-			} else {
-				return 0;
-			}
+			const percentRegex = /\((-?\d+(\.\d+)?)%\)/;
+			const percentMatch = profitLossValue.match(percentRegex);
+			return percentMatch ? parseFloat(percentMatch[1]) : 0;
 		},
-
 		isSortable: true,
 	},
 	{ label: 'actions', title: 'Actions', isSortable: false },

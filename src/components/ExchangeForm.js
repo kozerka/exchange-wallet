@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	fetchExchangeRate,
@@ -27,6 +27,7 @@ import { calculatePercentageChange } from '../utils/calculatePercentageChange';
 import { getPolishDateTime } from '../utils/getPolishDateTime';
 import { GiClick } from 'react-icons/gi';
 import { useFetchExchangeRate } from '../hooks/useFetchExchangeRate';
+import Modal from './Modal';
 function ExchangeForm() {
 	const dispatch = useDispatch();
 
@@ -49,6 +50,28 @@ function ExchangeForm() {
 			date,
 			rate,
 		});
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [transactionToRemove, setTransactionToRemove] = useState(null);
+
+	const openModal = transactionId => {
+		const transaction = transactions.find(t => t.id === transactionId);
+		if (transaction) {
+			setTransactionToRemove(transaction);
+			setIsModalOpen(true);
+		}
+	};
+
+	const closeModal = () => {
+		setIsModalOpen(false);
+		setTransactionToRemove(null);
+	};
+
+	const confirmRemoveTransaction = () => {
+		if (transactionToRemove) {
+			handleRemoveTransaction(transactionToRemove);
+			closeModal();
+		}
+	};
 
 	useEffect(() => {
 		if (rate && errors.rate) {
@@ -105,7 +128,7 @@ function ExchangeForm() {
 			dispatch(setLastUpdatedDate(new Date().toISOString()));
 			dispatch(resetForm());
 		} catch (error) {
-			console.error('Błąd podczas aktualizacji historii:', error);
+			console.error('Error while updating transaction history', error);
 		}
 	};
 
@@ -149,6 +172,43 @@ function ExchangeForm() {
 	const handleRemoveTransaction = id => {
 		dispatch(removeTransactionThunk(id));
 	};
+
+	const contentForModal = transactionToRemove ? (
+		<div className={'text-center'}>
+			<p className={'mb-4'}>Are you sure you want to remove this transaction?</p>
+			<p className={'font-bold'}>Transaction Details:</p>
+			<p>
+				<span className={'font-bold'}>ID:</span> {transactionToRemove.id}
+			</p>
+			<p>
+				<span className={'font-bold'}>Currency:</span> {transactionToRemove.symbols}
+			</p>
+			<p>
+				<span className={'font-bold'}>Base:</span> {transactionToRemove.base}
+			</p>
+			<p>
+				<span className={'font-bold'}>Amount:</span> {transactionToRemove.amount}
+			</p>
+			{transactionToRemove.history.length > 0 && (
+				<div className={'m-6'}>
+					<p className={'font-bold mt-4'}>Last History Entry:</p>
+					<p>
+						<span className={'font-bold'}>Current Rate:</span>{' '}
+						{transactionToRemove.history[transactionToRemove.history.length - 1].currentRate}
+					</p>
+					<p>
+						<span className={'font-bold'}>Current Value:</span>{' '}
+						{transactionToRemove.history[transactionToRemove.history.length - 1].currentValue}
+					</p>
+					<p>
+						<span className={'font-bold'}>Profit/Loss:</span>{' '}
+						{transactionToRemove.history[transactionToRemove.history.length - 1].profitLoss}
+					</p>
+				</div>
+			)}
+		</div>
+	) : null;
+
 	return (
 		<div className={'flex m-4'}>
 			<form className={'max-w-xl mx-auto w-1/5'} onSubmit={handleSubmit}>
@@ -196,7 +256,17 @@ function ExchangeForm() {
 				<TableContainer
 					headersConfig={headersConfig}
 					rows={transactions}
-					onRemove={handleRemoveTransaction}
+					isModalOpen={isModalOpen}
+					openModal={openModal}
+					closeModal={closeModal}
+				/>
+				<Modal
+					isOpen={isModalOpen}
+					onClose={closeModal}
+					content={contentForModal}
+					onAccept={confirmRemoveTransaction}
+					onCancel={closeModal}
+					transactionToRemove={transactionToRemove}
 				/>
 			</div>
 		</div>

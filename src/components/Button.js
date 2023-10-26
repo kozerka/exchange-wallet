@@ -28,7 +28,7 @@ function Button({ children, primary, secondary, loading, ...rest }) {
 }
 
 Button.propTypes = {
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
 	primary: PropTypes.bool,
 	secondary: PropTypes.bool,
 	loading: PropTypes.bool,

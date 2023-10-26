@@ -2,7 +2,7 @@ import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from 'react-icons
 import { BsTrash3 } from 'react-icons/bs';
 import PropTypes from 'prop-types';
 
-function Table({ headersConfig, rows, onRemove, onSort, sortBy, sortOrder }) {
+function Table({ headersConfig, rows, openModal, onSort, sortBy, sortOrder }) {
 	return (
 		<div className={'relative overflow-x-auto shadow-md sm:rounded-lg m-4'}>
 			<table className={'w-full my-table text-sm text-center text-gray-400'}>
@@ -43,7 +43,7 @@ function Table({ headersConfig, rows, onRemove, onSort, sortBy, sortOrder }) {
 									key={header.label}
 								>
 									{header.label === 'actions' ? (
-										<button onClick={() => onRemove(row.id)}>
+										<button onClick={() => openModal(row.id)}>
 											<BsTrash3 size={'1.2rem'} className={'hover:text-red-500'} />
 										</button>
 									) : ['currentRate', 'currentValue', 'profitLoss'].includes(header.label) ? (
@@ -97,10 +97,11 @@ Table.propTypes = {
 		})
 	).isRequired,
 	rows: PropTypes.arrayOf(PropTypes.object).isRequired,
-	onRemove: PropTypes.func.isRequired,
+	onRemove: PropTypes.func,
 	onSort: PropTypes.func.isRequired,
 	sortBy: PropTypes.string,
 	sortOrder: PropTypes.string,
+	openModal: PropTypes.func.isRequired,
 };
 
 export default Table;

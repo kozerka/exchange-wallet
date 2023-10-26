@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import useSort from '../hooks/useSort';
 
-function TableContainer({ headersConfig, rows, onRemove }) {
+function TableContainer({ headersConfig, rows, onRemove, openModal }) {
 	const { sortOrder, sortBy, setSortColumn, sortedData } = useSort(rows, headersConfig);
 	const rowsPerPage = 8;
 	const [currentPage, setCurrentPage] = useState(1);
@@ -21,6 +21,7 @@ function TableContainer({ headersConfig, rows, onRemove }) {
 				onSort={setSortColumn}
 				sortBy={sortBy}
 				sortOrder={sortOrder}
+				openModal={openModal}
 			/>
 			{totalPages > 1 && (
 				<>
@@ -41,7 +42,8 @@ function TableContainer({ headersConfig, rows, onRemove }) {
 TableContainer.propTypes = {
 	headersConfig: PropTypes.array.isRequired,
 	rows: PropTypes.array.isRequired,
-	onRemove: PropTypes.func.isRequired,
+	onRemove: PropTypes.func,
+	openModal: PropTypes.func.isRequired,
 };
 
 export default TableContainer;

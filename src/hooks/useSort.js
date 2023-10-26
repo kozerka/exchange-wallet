@@ -22,7 +22,7 @@ const useSort = (data, config) => {
 		}
 	};
 
-	let sortedData = data;
+	let sortedData = [...data];
 	if (sortOrder && sortBy) {
 		const { sortValue } = config.find(column => column.label === sortBy);
 		sortedData = [...data].sort((a, b) => {
@@ -30,6 +30,11 @@ const useSort = (data, config) => {
 			const bValue = sortValue(b) || '';
 			const reverseOrder = sortOrder === 'asc' ? 1 : -1;
 			const isDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+			if (sortBy === 'profitLoss') {
+				if (aValue === 0 && bValue !== 0) return reverseOrder;
+				if (aValue !== 0 && bValue === 0) return -reverseOrder;
+				return (aValue - bValue) * reverseOrder;
+			}
 			if (isDatePattern.test(aValue) && isDatePattern.test(bValue)) {
 				return (new Date(aValue).getTime() - new Date(bValue).getTime()) * reverseOrder;
 			}
