@@ -4,10 +4,10 @@ import {
 	fetchExchangeRate,
 	addTransactionThunk,
 	removeTransactionThunk,
+	updateTransactionHistoryThunk,
 } from '../store/thunks/exchangeThunks';
 import { headersConfig } from '../utils/headersConfig';
 import Table from './Table';
-import { getExchangeRateByDate } from '../apis/exchangerates.api';
 import { formFields } from '../utils/formFields';
 import {
 	resetForm,
@@ -23,11 +23,14 @@ import Button from './Button';
 import FormField from './FormField';
 import useCurrentRate from '../hooks/useCurrentRate';
 import useFormValidation from '../hooks/useFormValidation';
+import { calculatePercentageChange } from '../utils/calculatePercentageChange';
+import { getPolishDateTime } from '../utils/getPolishDateTime';
 import { GiClick } from 'react-icons/gi';
+import { useFetchExchangeRate } from '../hooks/useFetchExchangeRate';
 
 function ExchangeForm() {
 	const dispatch = useDispatch();
-	const selectedRate = useSelector(state => state.exchange.rate);
+
 	const status = useSelector(state => state.exchange.status);
 	const transactions = useSelector(state => state.exchange.transactions);
 	const currency = useSelector(state => state.exchange.currency);
@@ -35,8 +38,10 @@ function ExchangeForm() {
 	const amount = useSelector(state => state.exchange.amount);
 	const date = useSelector(state => state.exchange.date);
 	const rate = useSelector(state => state.exchange.rate);
+	const isLoading = useSelector(state => state.exchange.isLoading);
 	const rateModifiedByUser = useSelector(state => state.exchange.rateModifiedByUser);
 	const currentRate = useCurrentRate(base, currency);
+	const { selectedRate } = useFetchExchangeRate(base, date, currency, rateModifiedByUser);
 	const lastUpdatedDate = useSelector(state => state.exchange.lastUpdatedDate);
 	const { handleInputChange, validateAllFields, getFieldValue, errors, setErrors } =
 		useFormValidation(formFields, {
@@ -46,19 +51,6 @@ function ExchangeForm() {
 			date,
 			rate,
 		});
-	useEffect(() => {
-		if (base && date && !rateModifiedByUser) {
-			dispatch(fetchExchangeRate({ date, currency, base }))
-				.then(result => {
-					if (fetchExchangeRate.fulfilled.match(result)) {
-						setRate(selectedRate);
-					}
-				})
-				.catch(error => {
-					console.error('Błąd podczas pobierania rate:', error);
-				});
-		}
-	}, [base, date, currency, dispatch, selectedRate, rateModifiedByUser]);
 
 	useEffect(() => {
 		if (rate && errors.rate) {
@@ -109,46 +101,16 @@ function ExchangeForm() {
 			}
 		});
 	};
-	const handleUpdateHistory = async () => {
-		for (const transaction of transactions) {
-			try {
-				const response = await getExchangeRateByDate(
-					transaction.date,
-					transaction.currency,
-					transaction.base
-				);
-				const currentRate = response.rates[transaction.currency];
-
-				const roundedCurrentRate = Number(currentRate.toFixed(2));
-				const currentValue = (transaction.rate * transaction.amount).toFixed(2);
-				const purchaseValue = (roundedCurrentRate * transaction.amount).toFixed(2);
-				const profitLossValue = Number(
-					(roundedCurrentRate * transaction.amount - currentValue).toFixed(2)
-				);
-				const percentageChange = calculatePercentageChange(currentValue, purchaseValue).toFixed(2);
-				const profitLossDisplayValue = `${profitLossValue} (${percentageChange}%)`;
-
-				const newHistoryEntry = {
-					date: new Date().toISOString(), // data aktualizacji
-					currentRate: roundedCurrentRate,
-					currentValue,
-					profitLoss: profitLossDisplayValue,
-				};
-
-				dispatch(updateTransactionHistory({ id: transaction.id, history: newHistoryEntry }));
-			} catch (error) {
-				console.error('Błąd podczas aktualizacji historii:', error);
-			}
+	const handleUpdateHistory = async transactionId => {
+		try {
+			await dispatch(updateTransactionHistoryThunk(transactionId));
+			dispatch(setLastUpdatedDate(new Date().toISOString()));
+			dispatch(resetForm());
+		} catch (error) {
+			console.error('Błąd podczas aktualizacji historii:', error);
 		}
-
-		// Aktualizuj datę ostatniej aktualizacji
-		dispatch(setLastUpdatedDate(new Date().toISOString()));
 	};
 
-	const calculatePercentageChange = (purchaseValue, currentValue) => {
-		if (purchaseValue === 0) return 0;
-		return ((currentValue - purchaseValue) / purchaseValue) * 100;
-	};
 	const handleAddTransaction = () => {
 		const roundedCurrentRate = Number(currentRate.toFixed(2));
 		const currentValue = (rate * amount).toFixed(2);
@@ -190,9 +152,9 @@ function ExchangeForm() {
 		dispatch(removeTransactionThunk(id));
 	};
 	return (
-		<div className="flex m-4">
+		<div className={'flex m-4'}>
 			<form className={'max-w-xl mx-auto w-1/5'} onSubmit={handleSubmit}>
-				<h1 className="text-center font-bold text-xl m-4 p-4">Please provide transaction</h1>
+				<h1 className={'text-center font-bold text-xl m-4 p-4'}>Please provide transaction</h1>
 				{formFields.map(field => (
 					<FormField
 						key={field.name}
@@ -216,25 +178,28 @@ function ExchangeForm() {
 					)}
 				</div>
 			</form>
-			<div className="w-4/5 pl-8 pr-6">
-				<div className="m-4">
+			<div className={'w-4/5 pl-8 pr-6'}>
+				<div className={'m-4'}>
 					<Button
-						className="w-full bg-yellow-400 hover:bg-orange-500 text-black px-4 py-2 rounded block text-lg"
-						onClick={handleUpdateHistory}
+						className={
+							'w-full bg-yellow-400 hover:bg-orange-500 text-black px-4 py-2 rounded block text-lg'
+						}
+						onClick={() => transactions.forEach(t => handleUpdateHistory(t.id))}
 					>
 						<span>Current data for the date: </span>
-						<span className="font-bold">
-							{lastUpdatedDate ? new Date(lastUpdatedDate).toLocaleDateString() : 'not available'}.
+						<span className={'font-bold'}>
+							{lastUpdatedDate ? getPolishDateTime(new Date(lastUpdatedDate)) : 'not available'}.
 						</span>
 						<br />
-						<span className="uppercase mx-2 my-1">Click to update.</span>{' '}
-						<GiClick className="inline-block ml-2" />
+						<span className={'uppercase mx-2 my-1'}>Click to update.</span>{' '}
+						<GiClick className={'inline-block ml-2'} />
 					</Button>
 				</div>
 				<Table
 					headersConfig={headersConfig}
 					rows={transactions}
 					onRemove={handleRemoveTransaction}
+					isLoading={isLoading}
 				/>
 			</div>
 		</div>

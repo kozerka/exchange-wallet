@@ -22,3 +22,38 @@ export const removeTransactionThunk = createAsyncThunk(
 		return id;
 	}
 );
+export const updateTransactionHistoryThunk = createAsyncThunk(
+	'exchange/updateTransactionHistory',
+	async (transactionId, { getState, dispatch }) => {
+		const state = getState();
+		const transaction = state.exchange.transactions.find(t => t.id === transactionId);
+		if (!transaction) {
+			throw new Error('Transaction not found');
+		}
+
+		const currentRateResponse = await dispatch(
+			fetchExchangeRate({
+				date: new Date().toISOString().split('T')[0],
+				currency: transaction.symbols,
+				base: transaction.base,
+			})
+		);
+
+		const currentRate = Number(currentRateResponse.payload.toFixed(2));
+		const currentValue = (transaction.amount * currentRate).toFixed(2);
+		const profitLoss = (currentValue - transaction.amount * transaction.rate).toFixed(2);
+		const profitLossPercentage = (
+			(profitLoss / (transaction.amount * transaction.rate)) *
+			100
+		).toFixed(2);
+
+		const newHistoryEntry = {
+			date: new Date().toISOString(),
+			currentRate,
+			currentValue,
+			profitLoss: `${profitLoss} (${profitLossPercentage}%)`,
+		};
+
+		return { id: transactionId, history: newHistoryEntry };
+	}
+);

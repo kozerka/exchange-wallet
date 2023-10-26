@@ -4,6 +4,7 @@ import {
 	fetchExchangeRate,
 	addTransactionThunk,
 	removeTransactionThunk,
+	updateTransactionHistoryThunk,
 } from '../thunks/exchangeThunks';
 
 const initialState = {
@@ -17,6 +18,7 @@ const initialState = {
 	rate: '',
 	rateModifiedByUser: false,
 	lastUpdatedDate: null,
+	isLoading: false,
 };
 
 const exchangeSlice = createSlice({
@@ -67,13 +69,16 @@ const exchangeSlice = createSlice({
 	extraReducers: builder => {
 		builder
 			.addCase(fetchExchangeRate.pending, state => {
+				state.isLoading = true;
 				state.status = 'loading';
 			})
 			.addCase(fetchExchangeRate.fulfilled, (state, action) => {
+				state.isLoading = false;
 				state.status = 'succeeded';
 				state.rate = action.payload;
 			})
 			.addCase(fetchExchangeRate.rejected, (state, action) => {
+				state.isLoading = false;
 				state.status = 'failed';
 				state.error = action.error.message;
 			})
@@ -84,6 +89,22 @@ const exchangeSlice = createSlice({
 				state.transactions = state.transactions.filter(
 					transaction => transaction.id !== action.payload
 				);
+			})
+			.addCase(updateTransactionHistoryThunk.fulfilled, (state, action) => {
+				state.isLoading = false;
+				const transaction = state.transactions.find(t => t.id === action.payload.id);
+				if (transaction) {
+					transaction.history.push(action.payload.history);
+				}
+			})
+			.addCase(updateTransactionHistoryThunk.pending, state => {
+				state.status = 'loading';
+				state.isLoading = true;
+			})
+			.addCase(updateTransactionHistoryThunk.rejected, (state, action) => {
+				state.status = 'failed';
+				state.isLoading = false;
+				state.error = action.error.message;
 			});
 	},
 });
