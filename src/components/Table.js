@@ -1,19 +1,8 @@
-import useSort from '../hooks/useSort';
 import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
-import Pagination from './Pagination';
 import { BsTrash3 } from 'react-icons/bs';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 
-function Table({ headersConfig, rows, onRemove }) {
-	const { sortOrder, sortBy, setSortColumn, sortedData } = useSort(rows, headersConfig);
-	const rowsPerPage = 3;
-	const [currentPage, setCurrentPage] = useState(1);
-	const totalPages = Math.ceil(sortedData.length / rowsPerPage);
-	const indexOfLastRow = currentPage * rowsPerPage;
-	const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-	const currentRows = sortedData.slice(indexOfFirstRow, indexOfLastRow);
-
+function Table({ headersConfig, rows, onRemove, onSort, sortBy, sortOrder }) {
 	return (
 		<div className={'relative overflow-x-auto shadow-md sm:rounded-lg m-4'}>
 			<table className={'w-full my-table text-sm text-center text-gray-400'}>
@@ -24,7 +13,7 @@ function Table({ headersConfig, rows, onRemove }) {
 								scope={'col'}
 								className={'px-2 py-3'}
 								key={header.label}
-								onClick={() => header.isSortable && setSortColumn(header.label)}
+								onClick={() => header.isSortable && onSort(header.label)}
 								style={{ cursor: header.isSortable ? 'pointer' : 'default' }}
 							>
 								<div className={'flex items-center'}>
@@ -46,7 +35,7 @@ function Table({ headersConfig, rows, onRemove }) {
 					</tr>
 				</thead>
 				<tbody>
-					{currentRows.map((row, rowIndex) => (
+					{rows.map((row, rowIndex) => (
 						<tr className={' border-b bg-yellow-400 border-gray-400'} key={rowIndex}>
 							{headersConfig.map(header => (
 								<td
@@ -96,15 +85,6 @@ function Table({ headersConfig, rows, onRemove }) {
 					))}
 				</tbody>
 			</table>
-			<Pagination
-				currentPage={currentPage}
-				totalPages={totalPages}
-				onPageChange={page => setCurrentPage(page)}
-			/>
-
-			<div className={'text-center mt-4 mb-4'}>
-				Displaying {indexOfFirstRow + 1} - {indexOfLastRow} of {sortedData.length} transactions
-			</div>
 		</div>
 	);
 }
@@ -118,6 +98,9 @@ Table.propTypes = {
 	).isRequired,
 	rows: PropTypes.arrayOf(PropTypes.object).isRequired,
 	onRemove: PropTypes.func.isRequired,
+	onSort: PropTypes.func.isRequired,
+	sortBy: PropTypes.string,
+	sortOrder: PropTypes.string,
 };
 
 export default Table;

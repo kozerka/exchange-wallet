@@ -7,7 +7,7 @@ import {
 	updateTransactionHistoryThunk,
 } from '../store/thunks/exchangeThunks';
 import { headersConfig } from '../utils/headersConfig';
-import Table from './Table';
+import TableContainer from './TableContainer';
 import { formFields } from '../utils/formFields';
 import {
 	resetForm,
@@ -193,7 +193,7 @@ function ExchangeForm() {
 						<GiClick className={'inline-block ml-2'} />
 					</Button>
 				</div>
-				<Table
+				<TableContainer
 					headersConfig={headersConfig}
 					rows={transactions}
 					onRemove={handleRemoveTransaction}
