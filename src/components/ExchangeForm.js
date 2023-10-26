@@ -27,7 +27,6 @@ import { calculatePercentageChange } from '../utils/calculatePercentageChange';
 import { getPolishDateTime } from '../utils/getPolishDateTime';
 import { GiClick } from 'react-icons/gi';
 import { useFetchExchangeRate } from '../hooks/useFetchExchangeRate';
-
 function ExchangeForm() {
 	const dispatch = useDispatch();
 
@@ -38,7 +37,6 @@ function ExchangeForm() {
 	const amount = useSelector(state => state.exchange.amount);
 	const date = useSelector(state => state.exchange.date);
 	const rate = useSelector(state => state.exchange.rate);
-	const isLoading = useSelector(state => state.exchange.isLoading);
 	const rateModifiedByUser = useSelector(state => state.exchange.rateModifiedByUser);
 	const currentRate = useCurrentRate(base, currency);
 	const { selectedRate } = useFetchExchangeRate(base, date, currency, rateModifiedByUser);
@@ -199,7 +197,6 @@ function ExchangeForm() {
 					headersConfig={headersConfig}
 					rows={transactions}
 					onRemove={handleRemoveTransaction}
-					isLoading={isLoading}
 				/>
 			</div>
 		</div>

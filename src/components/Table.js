@@ -1,11 +1,18 @@
 import useSort from '../hooks/useSort';
 import { TiArrowUnsorted, TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
-
+import Pagination from './Pagination';
 import { BsTrash3 } from 'react-icons/bs';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 function Table({ headersConfig, rows, onRemove }) {
 	const { sortOrder, sortBy, setSortColumn, sortedData } = useSort(rows, headersConfig);
+	const rowsPerPage = 3;
+	const [currentPage, setCurrentPage] = useState(1);
+	const totalPages = Math.ceil(sortedData.length / rowsPerPage);
+	const indexOfLastRow = currentPage * rowsPerPage;
+	const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+	const currentRows = sortedData.slice(indexOfFirstRow, indexOfLastRow);
 
 	return (
 		<div className={'relative overflow-x-auto shadow-md sm:rounded-lg m-4'}>
@@ -39,7 +46,7 @@ function Table({ headersConfig, rows, onRemove }) {
 					</tr>
 				</thead>
 				<tbody>
-					{sortedData.map((row, rowIndex) => (
+					{currentRows.map((row, rowIndex) => (
 						<tr className={' border-b bg-yellow-400 border-gray-400'} key={rowIndex}>
 							{headersConfig.map(header => (
 								<td
@@ -89,6 +96,15 @@ function Table({ headersConfig, rows, onRemove }) {
 					))}
 				</tbody>
 			</table>
+			<Pagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={page => setCurrentPage(page)}
+			/>
+
+			<div className={'text-center mt-4 mb-4'}>
+				Displaying {indexOfFirstRow + 1} - {indexOfLastRow} of {sortedData.length} transactions
+			</div>
 		</div>
 	);
 }
