@@ -27,20 +27,3 @@ export const getLatestExchangeRate = async (symbols, base) => {
 		throw error;
 	}
 };
-
-export const getTimeSeriesExchangeRate = async (startDate, endDate, symbols, base) => {
-	try {
-		const response = await fetch(
-			`${API_URL}/timeseries?start_date=${startDate}&end_date=${endDate}&symbols=${symbols}&base=${base}`,
-			{
-				headers: {
-					apikey: API_KEY,
-				},
-			}
-		);
-		return await response.json();
-	} catch (error) {
-		console.error('Error fetching time series exchange rate:', error);
-		throw error;
-	}
-};

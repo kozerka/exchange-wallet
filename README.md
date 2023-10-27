@@ -1,70 +1,94 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Exchange Wallet Application
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+The Exchange Wallet application is a comprehensive tool designed for users to manage currency transactions. It provides functionalities such as adding, updating, and safely deleting transactions. The application fetches real-time exchange rates from an external API, ensuring that users always have the most up-to-date information.
 
-### `npm start`
+<p align="center">
+  <img src="./src/assets/img/mockup.png" alt="Screenshot of app" width="800px">
+</p>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Technology Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+![React Logo](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black) ![Redux Logo](https://img.shields.io/badge/Redux-764ABC.svg?style=for-the-badge&logo=Redux&logoColor=white) ![CRA Logo](https://img.shields.io/badge/Create%20React%20App-09D3AC.svg?style=for-the-badge&logo=Create-React-App&logoColor=white) ![Webpack](https://img.shields.io/badge/Webpack-8DD6F9.svg?style=for-the-badge&logo=Webpack&logoColor=black) ![Tailwind css](https://img.shields.io/badge/Tailwind%20CSS-06B6D4.svg?style=for-the-badge&logo=Tailwind-CSS&logoColor=white) ![ENV](https://img.shields.io/badge/.ENV-ECD53F.svg?style=for-the-badge&logo=dotenv&logoColor=black)
 
-### `npm test`
+## Features
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Real-time Exchange Rates**: The application fetches real-time exchange rates from an external API, allowing users to see the current value of their transactions.
+2. **Transaction Management**: Users can add new transactions, update existing ones, and safely delete them.
+3. **Transaction History with Charts**: For each transaction, the application maintains a history of API queries, letting users track the value of their transactions over time. This history is visually represented using `react-charts`, providing an intuitive graphical representation of transaction values over time.
+4. **Safe Deletion with Confirmation**: To prevent accidental deletions, the application provides a modal confirmation window when a user attempts to delete a transaction.
+5. **Form Validation**: The application ensures that all input fields are correctly filled out before a transaction can be added or updated.
 
-### `npm run build`
+<p align="center">
+  <img src="./src/assets/img/modal.png" alt="Screenshot of the website" width="600px">
+</p>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Configuration
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### API Key Setup
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+ENV_SETUP.md included - with detailed info about API and configuration.
 
-### `npm run eject`
+The application relies on an external API to fetch exchange rates. In short to set up the API:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Obtain an API key from the respective service provider.
+2. Create a `.env` file in the root directory of the project.
+3. Add the API key to the `.env` file as follows:
+   ```
+   REACT_APP_API_KEY=your_api_key_here
+   ```
+4. Save the `.env` file. The application will now use this key to authenticate with the external service.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+> **Note**: Always keep your API keys confidential. Do not expose them in the client-side code or public repositories.
 
-## Learn More
+## Getting Started
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Clone the repository:
+   ```
+   git clone [repository_url]
+   ```
+2. Navigate to the project directory:
+   ```
+   cd exchange-wallet
+   ```
+3. Install the required dependencies:
+   ```
+   npm install
+   ```
+4. Start the application:
+   ```
+   npm start
+   ```
+5. Configure .env file
+   
+The application will now be running on `http://localhost:3000`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contributing
 
-### Code Splitting
+If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Feedback
 
-### Analyzing the Bundle Size
+If you have any feedback or issues, please open an issue in this repository.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## License
 
-### Making a Progressive Web App
+[MIT](https://choosealicense.com/licenses/mit/)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+Created with ❤️ by [kozerka].
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+&nbsp;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🙏 Special Thanks
 
-### `npm run build` fails to minify
+A heartfelt thank you to my [Mentor - devmentor.pl](https://devmentor.pl/) for setting forth this challenge.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
