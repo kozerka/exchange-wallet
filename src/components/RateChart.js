@@ -24,11 +24,11 @@ const RateChart = ({ row }) => {
 	const data = [row.rate, ...row.history.map(item => item.currentRate)];
 
 	const chartData = {
-		labels: labels,
+		labels,
 		datasets: [
 			{
 				label: 'Rate over Time',
-				data: data,
+				data,
 				fill: false,
 				backgroundColor: 'rgb(75, 192, 192)',
 				borderColor: 'rgba(255, 140, 0, 0.8)',

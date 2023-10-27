@@ -28,6 +28,7 @@ import { getPolishDateTime } from '../utils/getPolishDateTime';
 import { GiClick } from 'react-icons/gi';
 import { useFetchExchangeRate } from '../hooks/useFetchExchangeRate';
 import Modal from './Modal';
+import TransactionModalContent from './TransactionModalContent';
 
 const ExchangeWallet = () => {
 	const dispatch = useDispatch();
@@ -168,51 +169,7 @@ const ExchangeWallet = () => {
 	};
 
 	const contentForModal = transactionIdToRemove ? (
-		<div className={'text-center'}>
-			<p className={'mb-4 text-xl font-bold text-red-600'}>
-				Are you sure you want to remove this transaction?
-			</p>
-			{transactionIdToRemove && (
-				<>
-					<p className={'font-bold'}>Transaction Details:</p>
-					<p>
-						<span className={'font-bold'}>ID:</span> {transactionIdToRemove.id}
-					</p>
-					<p>
-						<span className={'font-bold'}>Currency:</span> {transactionIdToRemove.symbols}
-					</p>
-					<p>
-						<span className={'font-bold'}>Base:</span> {transactionIdToRemove.base}
-					</p>
-					<p>
-						<span className={'font-bold'}>Amount:</span> {transactionIdToRemove.amount}
-					</p>
-					{transactionIdToRemove.history && transactionIdToRemove.history.length > 0 && (
-						<div className={'m-6'}>
-							<p className={'font-bold mt-4'}>Last History Entry:</p>
-							<p>
-								<span className={'font-bold'}>Current Rate:</span>{' '}
-								{
-									transactionIdToRemove.history[transactionIdToRemove.history.length - 1]
-										.currentRate
-								}
-							</p>
-							<p>
-								<span className={'font-bold'}>Current Value:</span>{' '}
-								{
-									transactionIdToRemove.history[transactionIdToRemove.history.length - 1]
-										.currentValue
-								}
-							</p>
-							<p>
-								<span className={'font-bold'}>Profit/Loss:</span>{' '}
-								{transactionIdToRemove.history[transactionIdToRemove.history.length - 1].profitLoss}
-							</p>
-						</div>
-					)}
-				</>
-			)}
-		</div>
+		<TransactionModalContent transaction={transactionIdToRemove} />
 	) : null;
 
 	return (
