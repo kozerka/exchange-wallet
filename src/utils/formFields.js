@@ -3,14 +3,14 @@ export const formFields = [
 	{
 		type: 'radio',
 		name: 'currency',
-		label: 'Currency',
+		label: 'Currency with which you buy',
 		options: ['PLN', 'EUR', 'USD'],
 		validate: value => (!value ? 'Currency is required!' : null),
 	},
 	{
 		type: 'select',
 		name: 'base',
-		label: 'Base',
+		label: 'Currency you are buying',
 		options: sampleCurrencies,
 		validate: value => (!value ? 'Base is required!' : null),
 	},
@@ -33,7 +33,7 @@ export const formFields = [
 	{
 		type: 'number',
 		name: 'rate',
-		label: 'Rate',
+		label: 'Exchange rate',
 		validate: value => {
 			if (!value) {
 				return 'Rate must be provided!';

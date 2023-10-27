@@ -1,4 +1,3 @@
-// store.js
 import { configureStore } from '@reduxjs/toolkit';
 import exchangeReducer from './slices/exchangeSlice';
 import { loadFromLocalStorage, saveToLocalStorage } from '../utils/localStorage';

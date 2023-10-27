@@ -1,13 +1,25 @@
 export const headersConfig = [
 	{
 		label: 'symbols',
-		title: 'Purchase Currency',
+		title: (
+			<>
+				Purchase
+				<br />
+				Currency
+			</>
+		),
 		sortValue: item => item.symbols,
 		isSortable: true,
 	},
 	{
 		label: 'base',
-		title: 'Owned Currency',
+		title: (
+			<>
+				Owned
+				<br />
+				Currency
+			</>
+		),
 		sortValue: item => item.base,
 		isSortable: true,
 	},
@@ -25,13 +37,25 @@ export const headersConfig = [
 	},
 	{
 		label: 'rate',
-		title: 'Purchase Price',
+		title: (
+			<>
+				Purchase
+				<br />
+				Rate
+			</>
+		),
 		sortValue: item => item.rate,
 		isSortable: true,
 	},
 	{
 		label: 'currentRate',
-		title: 'Current Rate',
+		title: (
+			<>
+				Current
+				<br />
+				Rate
+			</>
+		),
 		sortValue: item => item.currentRate,
 		isSortable: false,
 	},

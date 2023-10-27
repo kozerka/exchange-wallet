@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-function Pagination({ currentPage, totalPages, onPageChange }) {
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 	return (
 		<div className={'flex items-center justify-center my-4'}>
 			<button
@@ -40,7 +40,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 			</button>
 		</div>
 	);
-}
+};
 
 Pagination.propTypes = {
 	currentPage: PropTypes.number.isRequired,

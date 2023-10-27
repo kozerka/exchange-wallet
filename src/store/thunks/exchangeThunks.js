@@ -39,7 +39,7 @@ export const updateTransactionHistoryThunk = createAsyncThunk(
 			})
 		);
 
-		const currentRate = Number(currentRateResponse.payload.toFixed(2));
+		const currentRate = parseFloat(currentRateResponse.payload.toFixed(2));
 		const currentValue = (transaction.amount * currentRate).toFixed(2);
 		const profitLoss = (currentValue - transaction.amount * transaction.rate).toFixed(2);
 		const profitLossPercentage = (

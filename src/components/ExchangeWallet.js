@@ -28,7 +28,8 @@ import { getPolishDateTime } from '../utils/getPolishDateTime';
 import { GiClick } from 'react-icons/gi';
 import { useFetchExchangeRate } from '../hooks/useFetchExchangeRate';
 import Modal from './Modal';
-function ExchangeForm() {
+
+const ExchangeWallet = () => {
 	const dispatch = useDispatch();
 
 	const status = useSelector(state => state.exchange.status);
@@ -51,26 +52,23 @@ function ExchangeForm() {
 			rate,
 		});
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [transactionToRemove, setTransactionToRemove] = useState(null);
+	const [transactionIdToRemove, setTransactionIdToRemove] = useState(null);
 
-	const openModal = transactionId => {
-		const transaction = transactions.find(t => t.id === transactionId);
-		if (transaction) {
-			setTransactionToRemove(transaction);
-			setIsModalOpen(true);
-		}
+	const handleRemoveTransaction = id => {
+		const transactionToRemove = transactions.find(t => t.id === id);
+		setIsModalOpen(true);
+		setTransactionIdToRemove(transactionToRemove);
 	};
 
 	const closeModal = () => {
 		setIsModalOpen(false);
-		setTransactionToRemove(null);
+		setTransactionIdToRemove(null);
 	};
 
 	const confirmRemoveTransaction = () => {
-		if (transactionToRemove) {
-			handleRemoveTransaction(transactionToRemove);
-			closeModal();
-		}
+		dispatch(removeTransactionThunk(transactionIdToRemove.id));
+		setIsModalOpen(false);
+		setTransactionIdToRemove(null);
 	};
 
 	useEffect(() => {
@@ -147,7 +145,7 @@ function ExchangeForm() {
 				base,
 				amount,
 				date,
-				rate: rateModifiedByUser ? rate : selectedRate.toFixed(2),
+				rate: parseFloat(rateModifiedByUser ? rate : selectedRate).toFixed(2),
 				history: [
 					{
 						date: new Date().toISOString(),
@@ -169,50 +167,65 @@ function ExchangeForm() {
 		dispatch(resetForm());
 	};
 
-	const handleRemoveTransaction = id => {
-		dispatch(removeTransactionThunk(id));
-	};
-
-	const contentForModal = transactionToRemove ? (
+	const contentForModal = transactionIdToRemove ? (
 		<div className={'text-center'}>
-			<p className={'mb-4'}>Are you sure you want to remove this transaction?</p>
-			<p className={'font-bold'}>Transaction Details:</p>
-			<p>
-				<span className={'font-bold'}>ID:</span> {transactionToRemove.id}
+			<p className={'mb-4 text-xl font-bold text-red-600'}>
+				Are you sure you want to remove this transaction?
 			</p>
-			<p>
-				<span className={'font-bold'}>Currency:</span> {transactionToRemove.symbols}
-			</p>
-			<p>
-				<span className={'font-bold'}>Base:</span> {transactionToRemove.base}
-			</p>
-			<p>
-				<span className={'font-bold'}>Amount:</span> {transactionToRemove.amount}
-			</p>
-			{transactionToRemove.history.length > 0 && (
-				<div className={'m-6'}>
-					<p className={'font-bold mt-4'}>Last History Entry:</p>
+			{transactionIdToRemove && (
+				<>
+					<p className={'font-bold'}>Transaction Details:</p>
 					<p>
-						<span className={'font-bold'}>Current Rate:</span>{' '}
-						{transactionToRemove.history[transactionToRemove.history.length - 1].currentRate}
+						<span className={'font-bold'}>ID:</span> {transactionIdToRemove.id}
 					</p>
 					<p>
-						<span className={'font-bold'}>Current Value:</span>{' '}
-						{transactionToRemove.history[transactionToRemove.history.length - 1].currentValue}
+						<span className={'font-bold'}>Currency:</span> {transactionIdToRemove.symbols}
 					</p>
 					<p>
-						<span className={'font-bold'}>Profit/Loss:</span>{' '}
-						{transactionToRemove.history[transactionToRemove.history.length - 1].profitLoss}
+						<span className={'font-bold'}>Base:</span> {transactionIdToRemove.base}
 					</p>
-				</div>
+					<p>
+						<span className={'font-bold'}>Amount:</span> {transactionIdToRemove.amount}
+					</p>
+					{transactionIdToRemove.history && transactionIdToRemove.history.length > 0 && (
+						<div className={'m-6'}>
+							<p className={'font-bold mt-4'}>Last History Entry:</p>
+							<p>
+								<span className={'font-bold'}>Current Rate:</span>{' '}
+								{
+									transactionIdToRemove.history[transactionIdToRemove.history.length - 1]
+										.currentRate
+								}
+							</p>
+							<p>
+								<span className={'font-bold'}>Current Value:</span>{' '}
+								{
+									transactionIdToRemove.history[transactionIdToRemove.history.length - 1]
+										.currentValue
+								}
+							</p>
+							<p>
+								<span className={'font-bold'}>Profit/Loss:</span>{' '}
+								{transactionIdToRemove.history[transactionIdToRemove.history.length - 1].profitLoss}
+							</p>
+						</div>
+					)}
+				</>
 			)}
 		</div>
 	) : null;
 
 	return (
 		<div className={'flex m-4'}>
-			<form className={'max-w-xl mx-auto w-1/5'} onSubmit={handleSubmit}>
-				<h1 className={'text-center font-bold text-xl m-4 p-4'}>Please provide transaction</h1>
+			<form className={'max-w-xl mx-auto w-1/5 ml-8'} onSubmit={handleSubmit}>
+				<h1
+					className={
+						'text-center font-bold text-xl mt-4 mb-4 p-4 w-full bg-yellow-400  text-black px-4 py-5 rounded block text-lg'
+					}
+				>
+					Please provide transaction
+				</h1>
+
 				{formFields.map(field => (
 					<FormField
 						key={field.name}
@@ -256,9 +269,7 @@ function ExchangeForm() {
 				<TableContainer
 					headersConfig={headersConfig}
 					rows={transactions}
-					isModalOpen={isModalOpen}
-					openModal={openModal}
-					closeModal={closeModal}
+					onRemove={handleRemoveTransaction}
 				/>
 				<Modal
 					isOpen={isModalOpen}
@@ -266,11 +277,10 @@ function ExchangeForm() {
 					content={contentForModal}
 					onAccept={confirmRemoveTransaction}
 					onCancel={closeModal}
-					transactionToRemove={transactionToRemove}
 				/>
 			</div>
 		</div>
 	);
-}
+};
 
-export default ExchangeForm;
+export default ExchangeWallet;

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { GoSync } from 'react-icons/go';
 
-function Button({ children, primary, secondary, loading, ...rest }) {
+const Button = ({ children, primary, secondary, loading, ...rest }) => {
 	const baseClasses = 'px-4 py-2 border rounded flex items-center cursor-pointer w-full';
 	const primaryClasses = primary
 		? 'focus:outline-none text-black text-lg bg-yellow-400 hover:bg-orange-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2'
@@ -25,7 +25,7 @@ function Button({ children, primary, secondary, loading, ...rest }) {
 			)}
 		</button>
 	);
-}
+};
 
 Button.propTypes = {
 	children: PropTypes.node,

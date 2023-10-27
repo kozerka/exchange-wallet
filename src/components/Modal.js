@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import Button from './Button';
 
-function Modal({ isOpen, onClose, content, onAccept, onCancel }) {
+const Modal = ({ isOpen, onClose, content, onAccept, onCancel }) => {
 	if (!isOpen) return null;
 
 	const stopPropagation = e => {
@@ -24,7 +24,7 @@ function Modal({ isOpen, onClose, content, onAccept, onCancel }) {
 				onClick={stopPropagation}
 			>
 				<IoIosCloseCircleOutline
-					className={'absolute top-2 right-2 focus:outline-none cursor-pointer'}
+					className={'absolute top-2 right-2 focus:outline-none cursor-pointer hover:text-red-500'}
 					size={30}
 					onClick={onClose}
 				/>
@@ -53,7 +53,7 @@ function Modal({ isOpen, onClose, content, onAccept, onCancel }) {
 		</div>,
 		document.getElementById('root-modal')
 	);
-}
+};
 
 Modal.propTypes = {
 	isOpen: PropTypes.bool,

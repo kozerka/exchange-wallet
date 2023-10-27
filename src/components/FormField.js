@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 
-function FormField({ field, handleInputChange, value, errors }) {
+const FormField = ({ field, handleInputChange, value, errors }) => {
 	return (
 		<div className={'mb-6'} key={field.name}>
 			<label className={'block mb-2 text-sm font-medium text-gray-900 text-gray-800'}>
 				{field.label}:
 				{field.type === 'radio' && (
-					<div className={'flex flex-row mb-4'}>
+					<div className={'flex flex-col mb-4'}>
 						{field.options.map(option => (
 							<label key={option} className={'flex items-center mr-4'}>
 								<input
@@ -93,7 +93,7 @@ function FormField({ field, handleInputChange, value, errors }) {
 			)}
 		</div>
 	);
-}
+};
 FormField.propTypes = {
 	field: PropTypes.shape({
 		name: PropTypes.string.isRequired,

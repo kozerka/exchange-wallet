@@ -1,4 +1,4 @@
-import ExchangeForm from './components/ExchangeForm';
+import ExchangeWallet from './components/ExchangeWallet';
 import Footer from './components/Footer';
 import Header from './components/Header';
 
@@ -7,7 +7,7 @@ const App = () => {
 		<div className="flex flex-col min-h-screen">
 			<div className="flex-1">
 				<Header />
-				<ExchangeForm />
+				<ExchangeWallet />
 			</div>
 			<Footer />
 		</div>
