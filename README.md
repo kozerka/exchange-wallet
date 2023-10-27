@@ -20,6 +20,7 @@ The Exchange Wallet application is a comprehensive tool designed for users to ma
 3. **Transaction History with Charts**: For each transaction, the application maintains a history of API queries, letting users track the value of their transactions over time. This history is visually represented using `react-charts`, providing an intuitive graphical representation of transaction values over time.
 4. **Safe Deletion with Confirmation**: To prevent accidental deletions, the application provides a modal confirmation window when a user attempts to delete a transaction.
 5. **Form Validation**: The application ensures that all input fields are correctly filled out before a transaction can be added or updated.
+6. **Persistent Data with LocalStorage**: All transaction data is stored in the browser's localStorage, ensuring that user data remains intact even after closing the browser or refreshing the page.
 
 <p align="center">
   <img src="./src/assets/img/modal.png" alt="Screenshot of the website" width="600px">
