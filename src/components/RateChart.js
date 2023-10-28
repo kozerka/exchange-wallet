@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import {
 	Chart,
 	CategoryScale,
-	LineController,
-	LineElement,
-	PointElement,
 	LinearScale,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend,
 } from 'chart.js';
 
-Chart.register(LinearScale);
-Chart.register(CategoryScale, LineController, LineElement, PointElement);
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const RateChart = ({ row }) => {
 	const labels = [
@@ -30,16 +31,16 @@ const RateChart = ({ row }) => {
 				label: 'Rate over Time',
 				data,
 				fill: false,
-				backgroundColor: 'rgb(75, 192, 192)',
-				borderColor: 'rgba(255, 140, 0, 0.8)',
+				backgroundColor: 'rgba(255, 140, 0, 0.8)',
 				borderWidth: 2,
-				pointRadius: 5,
-				pointBackgroundColor: 'rgba(255, 140, 0, 0.8)',
+				pointRadius: 6,
+				pointBackgroundColor: 'rgba(255, 140, 0, 1)',
 			},
 		],
 	};
 
 	const options = {
+		responsive: true,
 		scales: {
 			x: { type: 'category' },
 			y: { type: 'linear' },
@@ -48,6 +49,14 @@ const RateChart = ({ row }) => {
 			legend: {
 				labels: {
 					color: 'black',
+				},
+			},
+			tooltip: {
+				display: true,
+				callbacks: {
+					label: function (context) {
+						return `Rate: ${context.parsed.y}`;
+					},
 				},
 			},
 		},
