@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const useSort = (data, config) => {
+export const useSort = (data, config) => {
 	const [sortOrder, setSortOrder] = useState(null);
 	const [sortBy, setSortBy] = useState(null);
 
@@ -55,5 +55,3 @@ const useSort = (data, config) => {
 		sortedData,
 	};
 };
-
-export default useSort;

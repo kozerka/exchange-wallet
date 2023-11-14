@@ -17,7 +17,7 @@ const Button = ({ children, primary, secondary, loading, ...rest }) => {
 		>
 			{loading ? (
 				<>
-					<GoSync className="animate-spin mr-2" />
+					<GoSync className={'animate-spin mr-2'} />
 					Loading...
 				</>
 			) : (

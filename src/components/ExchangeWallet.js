@@ -19,16 +19,12 @@ import {
 	updateTransactionHistory,
 	setLastUpdatedDate,
 } from '../store/slices/exchangeSlice';
-import Button from './Button';
-import FormField from './FormField';
-import useCurrentRate from '../hooks/useCurrentRate';
-import useFormValidation from '../hooks/useFormValidation';
+import Form from './Form';
 import { calculatePercentageChange } from '../utils/calculatePercentageChange';
-import { getPolishDateTime } from '../utils/getPolishDateTime';
-import { GiClick } from 'react-icons/gi';
-import { useFetchExchangeRate } from '../hooks/useFetchExchangeRate';
 import Modal from './Modal';
 import TransactionModalContent from './TransactionModalContent';
+import UpdateCurrencies from './UpdateCurrencies';
+import { useCurrentRate, useFetchExchangeRate, useFormValidation } from '../hooks';
 
 const ExchangeWallet = () => {
 	const dispatch = useDispatch();
@@ -174,55 +170,20 @@ const ExchangeWallet = () => {
 
 	return (
 		<div className={'flex m-4'}>
-			<form className={'max-w-xl mx-auto w-1/5 ml-8'} onSubmit={handleSubmit}>
-				<h1
-					className={
-						'text-center font-bold text-xl mt-4 mb-4 p-4 w-full bg-yellow-400  text-black px-4 py-5 rounded block text-lg'
-					}
-				>
-					Please provide transaction
-				</h1>
-
-				{formFields.map(field => (
-					<FormField
-						key={field.name}
-						field={field}
-						handleInputChange={handleInputChangeCustom}
-						value={getFieldValue(field.name)}
-						errors={errors}
-					/>
-				))}
-
-				<div>
-					{status !== 'loading' ? (
-						<Button primary type={'submit'}>
-							Submit
-						</Button>
-					) : (
-						<Button loading={true} disabled>
-							{' '}
-							Loading...{' '}
-						</Button>
-					)}
-				</div>
-			</form>
+			<Form
+				handleSubmit={handleSubmit}
+				formFields={formFields}
+				handleInputChangeCustom={handleInputChangeCustom}
+				getFieldValue={getFieldValue}
+				errors={errors}
+				status={status}
+			/>
 			<div className={'w-4/5 pl-8 pr-6'}>
-				<div className={'m-4'}>
-					<Button
-						className={
-							'w-full bg-yellow-400 hover:bg-orange-500 text-black px-4 py-2 rounded block text-lg'
-						}
-						onClick={() => transactions.forEach(t => handleUpdateHistory(t.id))}
-					>
-						<span>Current data for the date: </span>
-						<span className={'font-bold'}>
-							{lastUpdatedDate ? getPolishDateTime(new Date(lastUpdatedDate)) : 'not available'}.
-						</span>
-						<br />
-						<span className={'uppercase mx-2 my-1'}>Click to update.</span>{' '}
-						<GiClick className={'inline-block ml-2'} />
-					</Button>
-				</div>
+				<UpdateCurrencies
+					transactions={transactions}
+					handleUpdateHistory={handleUpdateHistory}
+					lastUpdatedDate={lastUpdatedDate}
+				/>
 				<TableContainer
 					headersConfig={headersConfig}
 					rows={transactions}

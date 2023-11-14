@@ -2,7 +2,7 @@ import Table from './Table';
 import Pagination from './Pagination';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import useSort from '../hooks/useSort';
+import { useSort } from '../hooks';
 
 const TableContainer = ({ headersConfig, rows, onRemove }) => {
 	const { sortOrder, sortBy, setSortColumn, sortedData } = useSort(rows, headersConfig);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function useFormValidation(formFields, initialState) {
+export function useFormValidation(formFields, initialState) {
 	const [errors, setErrors] = useState({});
 
 	const handleInputChange = (name, value, dispatch) => {
